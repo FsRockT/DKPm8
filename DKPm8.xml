@@ -1,0 +1,1236 @@
+<Ui>
+	<Script file="DKPm8.lua"/>
+	<Frame name="DKPm8" parent="UIParent" movable="true" enablemouse="true" visible="true">
+		<Size>
+			<AbsDimension x="341" y="341" />
+		</Size>
+		<Anchors>
+			<Anchor point="CENTER"/>
+		</Anchors>
+		<Scripts>
+			<OnLoad>
+				this:RegisterForDrag("LeftButton");
+				if (DKPm8_Option_GUIScale == nil) then
+					DKPm8_Option_GUIScale = .85;
+				end;
+				this:SetScale(DKPm8_Option_GUIScale);
+				DKPm8_OnLoad();
+				
+				bg1:Show();
+				bg2a:Hide();
+				bg2b:Hide();
+				bg2c:Hide();
+				bg2d:Hide();
+				this:Hide();
+			</OnLoad>
+			<OnDragStart>
+				this:StartMoving();
+			</OnDragStart>
+			<OnDragStop>
+				this:StopMovingOrSizing();
+			</OnDragStop>
+		</Scripts>
+		<Frames>
+			<Button name="$parent_Close">
+				<Size x="15" y="15" />
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
+						<Offset x="111" y="-16" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnMouseDown>
+						this:GetParent():Hide();
+					</OnMouseDown>
+				</Scripts>
+				<HighlightTexture file="Interface\Addons\DKPm8\images\btn_bid_over"/>
+			</Button>
+			<Button name="$parent_Bid">
+				<Size x="90" y="14" />
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM">
+						<Offset x="70" y="25" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnMouseUp>
+						if (tonumber(CurrentBid) ~= nil) then
+							SendChatMessage(CurrentBid, "RAID", nil, nil);
+							BidValue:ClearFocus();
+						else
+							PlaySound("igQuestFailed", "master");
+						end
+					</OnMouseUp>
+				</Scripts>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="BID">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+			</Button>
+			<Button name="$parent_Shard">
+				<Size x="20" y="20" />
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM">
+						<Offset x="0" y="25" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnMouseUp>
+						SendChatMessage("shard", "RAID", nil, nil);
+						BidValue:ClearFocus();
+					</OnMouseUp>
+				</Scripts>
+				
+				<HighlightTexture file="Interface\Addons\DKPm8\images\Shard"/>
+			</Button>
+			
+			<Button name="BtnBitTab">
+				<Size x="40" y="15"/>
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent" relativePoint="TOP">
+						<Offset x="-56" y="-42" />
+					</Anchor>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="BID"/>
+				<Scripts>
+					<OnMouseUp>
+						bg1:Show();
+						bg2a:Hide();
+						bg2b:Hide();
+						bg2c:Hide();
+						bg2d:Hide();
+					</OnMouseUp>
+				</Scripts>
+			</Button>
+			
+			<EditBox name="BidValue" autoFocus="false" numeric="true">
+				<FontString inherits="GameFontHighlightSmall" bytes="20"/>
+				<Size x="90" y="14" />
+				<Scripts>
+					<OnLoad>
+						this:SetMaxLetters(5);
+						this:SetTextInsets(30,15,0,0);
+						this:SetText("50");
+						BidValue = this;
+					</OnLoad>
+					<OnEnterPressed>
+						this:ClearFocus();
+					</OnEnterPressed>
+					<OnTextChanged>
+						CurrentBid = this:GetText();
+					</OnTextChanged>
+				</Scripts>
+				<Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parent" relativePoint="BOTTOM">
+						<Offset x="-71" y="25" />
+					</Anchor>
+				</Anchors>
+			</EditBox>
+			
+			<ScrollFrame name="DKPBidBar" inherits="FauxScrollFrameTemplate" hidden="true">
+				<Size x="206" y = "185" />
+				<Anchors>
+					<Anchor point="CENTER" relativeTo="$parent" relativePoint="CENTER">
+						<Offset x="-13" y="-35" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					 <OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(16, DKPBidBar_Update);
+					 </OnVerticalScroll>
+					 <OnShow>
+						DKPBidBar_Update();
+					 </OnShow>
+				</Scripts>
+				<Layers>
+					<Layer leve="BACKGROUND">
+						<Texture name="$parent_Background" file="Interface\AddOns\DKPm8\images\bg">
+							<Anchors>
+								<Anchor point="TOPLEFT"/>
+								<Anchor point="BOTTOMRIGHT"/>
+							</Anchors>
+						</Texture>
+					</Layer>
+				</Layers>
+			</ScrollFrame>
+
+			<Button name="DKPBidBar_PlayerName1" inherits="MyModEntryTemplate">
+				<Size x="100" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="8" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="Player1">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 1";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+
+			<Button name="DKPBidBar_PlayerName2" inherits="MyModEntryTemplate">
+				<Size x="100" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerName1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="Player2">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 2";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerName3" inherits="MyModEntryTemplate">
+				<Size x="100" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerName2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="Player3">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 3";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerName4" inherits="MyModEntryTemplate">
+				<Size x="100" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerName3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="Player4">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 4";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+						GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+						GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerName5" inherits="MyModEntryTemplate">
+				<Size x="100" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerName4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="Player5">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 5";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerName6" inherits="MyModEntryTemplate">
+				<Size x="100" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerName5" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="Player6">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 6";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerName7" inherits="MyModEntryTemplate">
+				<Size x="100" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerName6" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="Player7">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 7";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerName8" inherits="MyModEntryTemplate">
+				<Size x="100" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerName7" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="Player8">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 8";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerName9" inherits="MyModEntryTemplate">
+				<Size x="100" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerName8" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="Player9">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 9";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerName10" inherits="MyModEntryTemplate">
+				<Size x="100" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerName9" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="Player10">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 10";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerName11" inherits="MyModEntryTemplate">
+				<Size x="100" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerName10" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="Player11">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 11";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+
+
+
+
+
+			<Button name="DKPBidBar_PlayerBid1" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="108" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 1";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+
+			<Button name="DKPBidBar_PlayerBid2" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerBid1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 2";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerBid3" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerBid2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 3";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerBid4" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerBid3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 4";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerBid5" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerBid4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 5";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerBid6" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerBid5" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 6";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerBid7" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerBid6" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 7";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerBid8" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerBid7" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 8";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerBid9" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerBid8" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 9";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerBid10" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerBid9" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 10";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerBid11" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerBid10" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 11";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>	
+			
+
+
+
+
+			<Button name="DKPBidBar_PlayerCurrentDKP1" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar" relativePoint="TOPLEFT">
+						<Offset>
+							<AbsDimension x="158" y="-5"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors>
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 1";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+
+			<Button name="DKPBidBar_PlayerCurrentDKP2" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerCurrentDKP1" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 2";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerCurrentDKP3" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerCurrentDKP2" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 3";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerCurrentDKP4" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerCurrentDKP3" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 4";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerCurrentDKP5" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerCurrentDKP4" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 5";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerCurrentDKP6" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerCurrentDKP5" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 6";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerCurrentDKP7" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerCurrentDKP6" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 7";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerCurrentDKP8" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerCurrentDKP7" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 8";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerCurrentDKP9" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerCurrentDKP8" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 9";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerCurrentDKP10" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerCurrentDKP9" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 10";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+			<Button name="DKPBidBar_PlayerCurrentDKP11" inherits="MyModEntryTemplate">
+				<Size x="50" y="16"/>
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="DKPBidBar_PlayerCurrentDKP10" relativePoint="BOTTOMLEFT"/>
+				</Anchors>
+				<NormalText name="$parentText" inherits="GameFontNormalSmall" justifyH="CENTER" text="">
+					<Size>
+						<AbsDimension x="70" y="15"/>
+					</Size>
+					<Anchors>
+						<Anchor point="BOTTOM"/>
+					</Anchors> 
+				</NormalText>
+				<Scripts>
+					<OnLoad>
+						this.tooltip = "BidText Player 11";
+					</OnLoad>
+					<OnEnter>
+						if (this:GetParent():IsVisible()) then
+							GameTooltip:SetOwner(this, "ANCHOR_LEFT");
+							GameTooltip:SetText(this.tooltip);
+						end;
+					</OnEnter>
+					<OnLeave>
+						GameTooltip:Hide();
+					</OnLeave>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer leve="BACKGROUND">
+				<Texture name="bg1" file="Interface\AddOns\DKPm8\images\Background">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer leve="BACKGROUND">
+				<Texture name="bg2a" file="Interface\AddOns\DKPm8\images\BackGround_2a">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer leve="BACKGROUND">
+				<Texture name="bg2b" file="Interface\AddOns\DKPm8\images\BackGround_2b">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer leve="BACKGROUND">
+				<Texture name="bg2c" file="Interface\AddOns\DKPm8\images\BackGround_2c">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer leve="BACKGROUND">
+				<Texture name="bg2d" file="Interface\AddOns\DKPm8\images\BackGround_2d">
+					<Anchors>
+						<Anchor point="TOPLEFT"/>
+						<Anchor point="BOTTOMRIGHT"/>
+					</Anchors>
+				</Texture>
+			</Layer>
+			<Layer>
+				<FontString name="$parentFontString" inherits="GameFontNormalSmall"  text="DKPm8" >
+				  <Anchors>
+					<Anchor point="TOP" relativeTo="$parent">
+						<Offset x="-0" y="-17" />
+					</Anchor>
+				  </Anchors>
+				</FontString>
+				
+				<FontString name="$parent_DKPm8_CurrentItem" inherits="GameFontNormal"  text="[Item]" >
+				  <Anchors>
+					<Anchor point="CENTER" relativeTo="$parent">
+						<Offset x="-0" y="90" />
+					</Anchor>
+				  </Anchors>
+				</FontString>
+				
+				<FontString name="$parentFontString" inherits="GameFontHighlightSmall" text="Player" >
+				  <Anchors>
+					<Anchor point="CENTER" relativeTo="$parent">
+						<Offset x="-65" y="65" />
+					</Anchor>
+				  </Anchors>
+				</FontString>
+				
+				<FontString name="$parentFontString" inherits="GameFontHighlightSmall"  text="BID" >
+				  <Anchors>
+					<Anchor point="CENTER" relativeTo="$parent">
+						<Offset x="16" y="65" />
+					</Anchor>
+				  </Anchors>
+				</FontString>
+				
+				<FontString name="$parentFontString" inherits="GameFontHighlightSmall"  text="MaxDKP" >
+				  <Anchors>
+					<Anchor point="CENTER" relativeTo="$parent">
+						<Offset x="64" y="65" />
+					</Anchor>
+				  </Anchors>
+				</FontString>
+				
+
+							
+				<!--PLACEHOLDER WILL BE BUTTONS>
+				
+				<FontString name="$parentFontString" inherits="GameFontHighlightSmall"  text="..." justifyH="LEFT" justifyV="TOP">
+				  <Anchors>
+					<Anchor point="TOP" relativeTo="$parent">
+						<Offset x="-10" y="-45" />
+					</Anchor>
+				  </Anchors>
+				</FontString>
+				<FontString name="$parentFontString" inherits="GameFontHighlightSmall"  text="..." justifyH="LEFT" justifyV="TOP">
+				  <Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parent">
+						<Offset x="-94" y="10" />
+					</Anchor>
+				  </Anchors>
+				</FontString>
+				<FontString name="$parentFontString" inherits="GameFontHighlightSmall"  text="..." justifyH="LEFT" justifyV="TOP">
+				  <Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parent">
+						<Offset x="-56" y="10" />
+					</Anchor>
+				  </Anchors>
+				</FontString>
+				<FontString name="$parentFontString" inherits="GameFontHighlightSmall"  text="..." justifyH="LEFT" justifyV="TOP">
+				  <Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parent">
+						<Offset x="-18" y="10" />
+					</Anchor>
+				  </Anchors>
+				</FontString>
+				<FontString name="$parentFontString" inherits="GameFontHighlightSmall"  text="..." justifyH="LEFT" justifyV="TOP">
+				  <Anchors>
+					<Anchor point="BOTTOM" relativeTo="$parent">
+						<Offset x="20" y="10" />
+					</Anchor>
+				  </Anchors>
+				</FontString>
+				<PLACEHOLDER WILL BE BUTTONS-->
+			</Layer>
+		</Layers>
+	</Frame>
+</Ui>

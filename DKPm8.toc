@@ -1,0 +1,9 @@
+## Interface: 30000
+## Title: DKPm8
+## Version: 0.1
+## Notes: DKPm8 should help handeling Loot faster!
+## Author: FsRockT <Drunken Temple> - Lights Hope
+## SavedVariables: DKPm8_InitialBidDuration, DKPm8_InitialBidDurationExtention, DKPm8_Option_GUIScale, DKPm8_Option_WhisperResponse, DKPm8_Option_BWCBAnnounce, DKPm8_Option_SecondsAnnounce
+
+DKPm8.xml
+DKPm8_ChatHandler.lua
